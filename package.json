@@ -1,0 +1,20 @@
+{
+  "name": "development",
+  "version": "1.0.0",
+  "description": "",
+  "main": "liftExample.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crocks": "^0.12.4",
+    "folktale": "^2.3.2",
+    "ramda": "^0.27.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.14",
+    "jest": "^26.5.2"
+  }
+}
