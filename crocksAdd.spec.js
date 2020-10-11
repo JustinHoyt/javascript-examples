@@ -3,20 +3,20 @@ const crocksAdd = require('./crocksAdd');
 
 describe("Add tests", () => {
 
-    test("should add two numbers", () => {
+    test("should add two numbers", async () => {
         const first = 2
         const second = 3
 
-        // crocksAdd.add = jest.fn((a, b) => 3);
-
-        // crocksAdd.add.mockResolvedValue((a, b) => 10);
-
-
-        // const addSpy = jest.spyOn(crocksAdd.add, 'addArgs');
-        // addSpy.mockReturnValue(10)
-
-        const output = crocksAdd.addPositive(first, second);
+        const output = await crocksAdd.addPositive(first, second);
 
         expect(output).toEqual(5);
+    });
+    test("should error on negative numbers", async () => {
+        const first = 2
+        const second = -3
+
+        const output = await crocksAdd.addPositive(first, second);
+
+        expect(output).toEqual('not a positive integer');
     });
 });
