@@ -6,6 +6,7 @@ const liftA2 = require('crocks/helpers/liftA2');
 const { Err, Ok } = Result;
 const { Rejected, Resolved } = Async;
 const resultToAsync = require('crocks/Async/resultToAsync');
+const composeK = require('crocks/helpers/composeK');
 
 /**
  * @param {string | number} number1
@@ -38,6 +39,8 @@ function addPositiveIOExample(number1, number2) {
  * @param {string | number} number2
  */
 async function addPositiveAsyncExample(number1, number2) {
+    const promise1 = new Promise((resolve, reject) => resolve(number1));
+    const promise2 = new Promise((resolve, reject) => resolve(number2));
     /**
      * @param {string} value
      */
@@ -47,22 +50,17 @@ async function addPositiveAsyncExample(number1, number2) {
      */
     const isPositive = (value) => value >= 0 ? Ok(value) : Err('not a positive integer');
 
-    const validate = R.compose(R.chain(isPositive), isNumber);
+    const validate = composeK(isPositive, isNumber);
 
-    const first = Async.fromPromise(() => new Promise((resolve, reject) => resolve(number1)))();
-    // const validatedFirst = first.map(validate);
-    const validatedFirst = first.map(validate);
-    const flattenedFirst = validatedFirst.chain(resultToAsync);
-    const unwrappedFirst = await flattenedFirst.toPromise().then(R.identity).catch(R.identity);
+    const first = Async.fromPromise(() => promise1)();
+    const validatedFirst = first.map(validate).chain(resultToAsync);
 
-    const second = Async.fromPromise(() => new Promise((resolve, reject) => resolve(number2)))();
-    const validatedSecond = second.map(validate);
-    const flattenedSecond = validatedSecond.chain(resultToAsync);
-    const unwrappedSecond = await flattenedSecond.toPromise().then(R.identity).catch(R.identity);
+    const second = Async.fromPromise(() => promise2)();
+    const validatedSecond = second.map(validate).chain(resultToAsync);
 
     const addArgs = R.lift(R.add);
 
-    return await addArgs(flattenedFirst, flattenedSecond).toPromise()
+    return await addArgs(validatedFirst, validatedSecond).toPromise()
         .then(R.identity)
         .catch(R.identity);
 }
