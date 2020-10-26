@@ -9,6 +9,12 @@ const R = require('ramda');
  * @property {number} annualSavingsRate
  */
 
+const applyN = R.compose(R.reduceRight(R.compose, R.identity), R.repeat);
+
+const growNetWorth = (amountSavedYearly, growth) => (initialAmount) => (
+  initialAmount * growth + amountSavedYearly
+);
+
 /**
  * Calculates retirement net worth based on a simple set of params
  *
@@ -20,17 +26,8 @@ function retirement(props) {
     growthPercentage = 1.07, initialSavings, yearsOfSavings = 40, annualSavingsRate,
   } = props;
 
-  const growNetWorth = R.curry(
-    (amountSavedYearly, growth, initialAmount) => (
-      initialAmount * growth + amountSavedYearly
-    ),
-  );
-
-  const applyN = R.compose(R.reduceRight(R.compose, R.identity), R.repeat);
-
-  const netWorth = applyN(
-    growNetWorth(annualSavingsRate, growthPercentage), yearsOfSavings,
-  )(initialSavings);
+  const annualGrowth = growNetWorth(annualSavingsRate, growthPercentage);
+  const netWorth = applyN(annualGrowth, yearsOfSavings)(initialSavings);
 
   /** @type {Intl.NumberFormatOptions} formatOptions */
   const formatOptions = { style: 'currency', currency: 'USD' };
