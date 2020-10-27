@@ -19,7 +19,7 @@ function Animal(spec) {
   const getName = () => name;
 
   return {
-    getName, energy, getEnergy, setEnergy, eat, sleep, play,
+    getName, getEnergy, setEnergy, eat, sleep, play,
   };
 }
 
@@ -31,6 +31,7 @@ console.log(anAnimal.getEnergy());
  * @param {{ name: string; energy: number; breed: string; }} spec
  */
 function Dog(spec) {
+  const { breed } = spec;
   const animalInfo = Animal(spec);
   const { setEnergy, getEnergy } = animalInfo;
 
@@ -40,8 +41,8 @@ function Dog(spec) {
   };
 
   return {
-    ...spec,
     ...animalInfo,
+    breed,
     bark,
   };
 }
