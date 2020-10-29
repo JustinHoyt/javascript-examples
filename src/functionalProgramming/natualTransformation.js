@@ -4,8 +4,6 @@ const { composeK } = require('crocks');
 
 const { Ok, Err } = Result;
 
-const print = (prefix) => (x) => console.log(prefix, x);
-
 /**
  * @param {string | number} number1
  * @param {string | number} number2

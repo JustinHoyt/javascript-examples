@@ -1,9 +1,9 @@
 const R = require('ramda');
 
 const Result = require('crocks/Result');
-const Identity = require('crocks/Identity');
 
 const { Ok, Err } = Result;
+const print = (prefix) => (x) => console.log(prefix, x);
 
 class Sum {
   get isNothing() {
@@ -64,14 +64,12 @@ const two = Sum.of(2);
 const three = Sum.of(3);
 const four = Sum.of(4);
 
-console.log(fold(Ok([]), [Ok([1, 2, 3]), (Err([4, 5, 6]))])
-  .either(R.identity, R.identity));
+fold(Ok([]), [Ok([1, 2, 3]), (Ok([4, 5, 6]))])
+  .either(print('failed Err([]):'), print('success Ok([]):'));
 
-console.log(fold(Ok([]), [Ok([1, 2, 3]), (Ok([4, 5, 6]))])
-  .either(R.identity, R.identity));
+fold(Ok([]), [Ok([1, 2, 3]), (Err([4, 5, 6]))])
+  .either(print('failed Err([]):'), print('success Ok([]):'));
 
-const print = (x) => console.log(x);
-
-R.tap(print, fold(Sum.empty(), [two, three, four]));
+R.tap(print('concat Sum(int):'), fold(Sum.empty(), [two, three, four]));
 
 module.exports = {};
