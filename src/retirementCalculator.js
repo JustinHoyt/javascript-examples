@@ -9,7 +9,7 @@ const R = require('ramda');
  * @property {number} annualSavingsRate
  */
 
-const applyN = R.compose(R.reduceRight(R.compose, R.identity), R.repeat);
+const applyN = R.compose(R.reduce(R.compose, R.identity), R.repeat);
 
 const growNetWorth = (amountSavedYearly, growth) => (initialAmount) => (
   initialAmount * growth + amountSavedYearly
