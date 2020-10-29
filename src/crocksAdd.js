@@ -13,12 +13,12 @@ const composeK = require('crocks/helpers/composeK');
  */
 function addPositiveIOExample(number1, number2) {
   /**
-     * @param {string} value
-     */
+   * @param {string} value
+   */
   const isNumber = (value) => (parseInt(value, 10) ? Ok(value) : Err('not a number'));
   /**
-     * @param {number} value
-     */
+   * @param {number} value
+   */
   const isPositive = (value) => (value >= 0 ? Ok(value) : Err('not a positive integer'));
 
   const validate = R.compose(R.chain(isPositive), isNumber);
@@ -68,9 +68,7 @@ async function test() {
   console.log(await addPositiveAsyncExample(process.argv[2], process.argv[3]));
 }
 
-// @ts-ignore
 if (require.main === module) {
-  // console.log(addPositiveAsyncExample(process.argv[2], process.argv[3]));
   test();
 }
 

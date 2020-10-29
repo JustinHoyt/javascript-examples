@@ -1,7 +1,7 @@
 /* eslint-disable no-multiple-empty-lines */
 const R = require('ramda');
 const { composeK } = require('crocks');
-const Maybe = require('./Maybe.js');
+const Maybe = require('./DataTypes/Maybe.js');
 
 const print = (prefix) => (x) => console.log(prefix, x);
 

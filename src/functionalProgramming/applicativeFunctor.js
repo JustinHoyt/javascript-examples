@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 const R = require('ramda');
-const Maybe = require('./Maybe');
+const Maybe = require('./DataTypes/Maybe');
 
 const print = (prefix) => (x) => console.log(prefix, x);
 
