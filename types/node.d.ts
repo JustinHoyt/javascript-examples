@@ -1,9 +1,8 @@
-interface Monad {
+interface monad {
   join: Function;
   map: Function;
   chain: Function;
   ap: Function;
-  of: Function;
 }
 
-interface Maybe extends Monad {}
+interface maybe extends monad {}

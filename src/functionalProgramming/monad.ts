@@ -2,23 +2,27 @@
 /// <reference path="../../types/node.d.ts"/>
 const R = require('ramda');
 const { composeK } = require('crocks');
-const Maybe = require('./DataTypes/Maybe.js');
+import {compose, curry} from "lodash/fp";
+import { Maybe } from 'purify-ts/Maybe';
+import { map } from 'purifree-ts/pointfree/map';
+import { chain } from 'purifree-ts/pointfree/chain';
 
-// const log = (prefix) => (x) => console.log(prefix, x);
-const log = (prefix: string): Function => (x: unknown): void => console.log(prefix, x);
+const log = curry((prefix: string, x: unknown) => console.log(prefix, x));
 
-const safeProp = (prop: string | number) => (obj: object): Maybe => Maybe.of(obj[prop]);
+const safeProp = (prop: string | number) => (obj): object => Maybe.of(obj[prop]);
 
 // safeHead :: [a] -> Maybe a
-const safeHead = safeProp(0);
+const safeHead: (a) => any = safeProp(0);
 
 // firstAddressStreet :: User -> Maybe (Maybe (Maybe Street))
-const firstAddressStreet = R.compose(
-  R.map(R.map(R.map(R.tap(log('mapping: '))))),
-  R.map(R.map(safeProp('street'))),
-  R.map(safeHead),
+const firstAddressStreet = compose(
+  map(map(map(R.tap(log('mapping: '))))),
+  map(map(safeProp('street'))),
+  map(safeHead),
   safeProp('addresses'),
 );
+
+
 // that's a lot of maps!
 
 firstAddressStreet({
@@ -31,27 +35,27 @@ firstAddressStreet({
 
 
 // joins can fix this
-const join = (m) => m.join();
+// const join = (m) => m.join();
 
-const firstAddressStreetWithJoin = R.compose(
-  R.map(R.tap(log('map and join: '))),
-  join,
-  R.map(safeProp('street')),
-  join,
-  R.map(safeHead),
-  safeProp('addresses'),
-);
+// const firstAddressStreetWithJoin = compose(
+//   R.map(R.tap(log('map and join: '))),
+//   join,
+//   R.map(safeProp('street')),
+//   join,
+//   R.map(safeHead),
+//   safeProp('addresses'),
+// );
 
-firstAddressStreetWithJoin({
-  addresses: [{ street: { name: 'Mulburry', number: 8402 }, postcode: 'WC2N' }],
-});
+// firstAddressStreetWithJoin({
+//   addresses: [{ street: { name: 'Mulburry', number: 8402 }, postcode: 'WC2N' }],
+// });
 
 
 
 
 
 // join feels repetitive. chain can fix this
-const firstAddressStreetWithChain = R.compose(
+const firstAddressStreetWithChain = compose(
   R.chain(R.tap(log('chain: '))),
   R.chain(safeProp('street')),
   R.chain(safeHead),

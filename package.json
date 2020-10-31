@@ -12,6 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "crocks": "^0.12.4",
+    "fp-ts": "^2.8.5",
+    "lodash": "^4.17.20",
+    "purifree-ts": "^0.16.0-beta.10",
+    "purify-ts": "^0.16.0-beta.5",
     "ramda": "^0.27.1"
   },
   "devDependencies": {
@@ -20,6 +24,7 @@
     "@babel/node": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
     "@types/jest": "^26.0.14",
+    "@types/lodash": "^4.14.164",
     "@types/ramda": "^0.27.32",
     "@types/regenerator-runtime": "^0.13.0",
     "eslint": "^7.12.0",
