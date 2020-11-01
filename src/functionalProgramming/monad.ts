@@ -1,24 +1,22 @@
 /* eslint-disable no-multiple-empty-lines */
 /// <reference path="../../types/node.d.ts"/>
-const R = require('ramda');
-const { composeK } = require('crocks');
-import {compose, curry} from "lodash/fp";
-import { Maybe } from 'purify-ts/Maybe';
-import { map } from 'purifree-ts/pointfree/map';
-import { chain } from 'purifree-ts/pointfree/chain';
+import * as R from 'ramda';
+import { composeK } from 'crocks/helpers';
+import Maybe from './DataTypes/Maybe';
 
-const log = curry((prefix: string, x: unknown) => console.log(prefix, x));
+type id = string | number;
+type maybe = Maybe | any;
 
-const safeProp = (prop: string | number) => (obj): object => Maybe.of(obj[prop]);
+const log = (prefix: string) => (x) => console.log(prefix, x);
+Maybe.of({'hello':'world'});
+const safeProp = (prop: id) => (obj): maybe => Maybe.of(obj[prop]);
 
-// safeHead :: [a] -> Maybe a
-const safeHead: (a) => any = safeProp(0);
+const safeHead = safeProp(0);
 
-// firstAddressStreet :: User -> Maybe (Maybe (Maybe Street))
-const firstAddressStreet = compose(
-  map(map(map(R.tap(log('mapping: '))))),
-  map(map(safeProp('street'))),
-  map(safeHead),
+const firstAddressStreet: (obj) => maybe = R.compose(
+  R.map(R.map(R.map(R.tap(log('mapping: '))))),
+  R.map(R.map(safeProp('street'))),
+  R.map(safeHead),
   safeProp('addresses'),
 );
 
@@ -34,29 +32,29 @@ firstAddressStreet({
 
 
 
-// joins can fix this
-// const join = (m) => m.join();
+//joins can fix this
+const join = (m) => m.join();
 
-// const firstAddressStreetWithJoin = compose(
-//   R.map(R.tap(log('map and join: '))),
-//   join,
-//   R.map(safeProp('street')),
-//   join,
-//   R.map(safeHead),
-//   safeProp('addresses'),
-// );
+const firstAddressStreetWithJoin: (obj) => maybe = R.compose(
+  R.map(R.tap(log('map and join: '))),
+  join,
+  R.map(safeProp('street')),
+  join,
+  R.map(safeHead),
+  safeProp('addresses'),
+);
 
-// firstAddressStreetWithJoin({
-//   addresses: [{ street: { name: 'Mulburry', number: 8402 }, postcode: 'WC2N' }],
-// });
+firstAddressStreetWithJoin({
+  addresses: [{ street: { name: 'Mulburry', number: 8402 }, postcode: 'WC2N' }],
+});
 
 
 
 
 
 // join feels repetitive. chain can fix this
-const firstAddressStreetWithChain = compose(
-  R.chain(R.tap(log('chain: '))),
+const firstAddressStreetWithChain: (obj) => maybe = R.compose(
+  R.map(R.tap(log('chain: '))),
   R.chain(safeProp('street')),
   R.chain(safeHead),
   safeProp('addresses'),
@@ -86,7 +84,7 @@ firstAddressStreetWithChain({
  *
  * R.composeK(h, g, f) = R.compose(R.chain(h), R.chain(g), R.chain(f))
  */
-const firstAddressStreetWithComposeK = composeK(
+const firstAddressStreetWithComposeK: (obj) => maybe = composeK(
   R.tap(log('composeK: ')),
   safeProp('street'),
   safeHead,

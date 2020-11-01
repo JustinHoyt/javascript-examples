@@ -4,5 +4,3 @@ interface monad {
   chain: Function;
   ap: Function;
 }
-
-interface maybe extends monad {}
