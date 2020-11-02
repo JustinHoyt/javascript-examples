@@ -1,17 +1,22 @@
 /* eslint-disable no-multiple-empty-lines */
 const R = require('ramda');
 const { composeK } = require('crocks');
-const Maybe = require('./DataTypes/Maybe.js');
+const Maybe = require('./DataTypes/MaybeJS.js');
 
+/**
+ * @typedef {object} Maybe
+ * @typedef {string | number} id
+ */
+
+/** @type {(prefix: string) => (x) => void} */
 const print = (prefix) => (x) => console.log(prefix, x);
 
-// safeProp :: Key -> {Key: a} -> Maybe a
-const safeProp = R.curry((x, obj) => Maybe.of(obj[x]));
+/** @type {(prop: id) => (obj: any) => Maybe} */
+const safeProp = (prop) => (obj) => Maybe.of(obj[prop]);
 
-// safeHead :: [a] -> Maybe a
 const safeHead = safeProp(0);
 
-// firstAddressStreet :: User -> Maybe (Maybe (Maybe Street))
+/** @type {(obj) => Maybe} */
 const firstAddressStreet = R.compose(
   R.map(R.map(R.map(R.tap(print('mapping: '))))),
   R.map(R.map(safeProp('street'))),
@@ -32,6 +37,7 @@ firstAddressStreet({
 // joins can fix this
 const join = (m) => m.join();
 
+/** @type {(obj) => Maybe} */
 const firstAddressStreetWithJoin = R.compose(
   R.map(R.tap(print('map and join: '))),
   join,
@@ -50,6 +56,7 @@ firstAddressStreetWithJoin({
 
 
 // join feels repetitive. chain can fix this
+/** @type {(obj) => Maybe} */
 const firstAddressStreetWithChain = R.compose(
   R.chain(R.tap(print('chain: '))),
   R.chain(safeProp('street')),
@@ -81,6 +88,7 @@ firstAddressStreetWithChain({
  *
  * R.composeK(h, g, f) = R.compose(R.chain(h), R.chain(g), R.chain(f))
  */
+/** @type {(obj) => Maybe} */
 const firstAddressStreetWithComposeK = composeK(
   R.tap(print('composeK: ')),
   safeProp('street'),

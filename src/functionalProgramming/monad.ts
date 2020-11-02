@@ -8,7 +8,6 @@ type id = string | number;
 type maybe = Maybe | any;
 
 const log = (prefix: string) => (x) => console.log(prefix, x);
-Maybe.of({'hello':'world'});
 const safeProp = (prop: id) => (obj): maybe => Maybe.of(obj[prop]);
 
 const safeHead = safeProp(0);
