@@ -3,7 +3,7 @@
 import * as R from 'ramda';
 
 import Maybe from './DataTypes/Maybe';
-import { composeK } from 'crocks/helpers';
+import { pipeK } from 'crocks';
 
 type id = string | number;
 
@@ -13,12 +13,12 @@ const safeProp = (prop: id) => (obj: object): maybe<unknown> => Maybe.of(obj[pro
 
 const safeHead = safeProp(0);
 
-const firstAddressStreet = R.compose(
-  R.map(R.map(R.map(R.tap(log('mapping: '))))),
-  // @ts-ignore
-  R.map(R.map(safeProp('street'))),
-  R.map(safeHead),
+const firstAddressStreet = R.pipe(
   safeProp('addresses'),
+  // @ts-ignore
+  R.map(safeHead),
+  R.map(R.map(safeProp('street'))),
+  R.map(R.map(R.map(R.tap(log('mapping: '))))),
 ) as unknown as (obj) => maybe<string>;
 
 // that's a lot of maps!
@@ -35,14 +35,14 @@ firstAddressStreet({
 //joins can fix this
 const join = (m) => m.join();
 
-const firstAddressStreetWithJoin: (obj) => maybe<any>[] = R.compose(
-  R.map(R.tap(log('map and join: '))),
+const firstAddressStreetWithJoin: (obj) => maybe<any>[] = R.pipe(
+  safeProp('addresses'),
+  // @ts-ignore
+  R.map(safeHead),
   join,
   R.map(safeProp('street')),
   join,
-  R.map(safeHead),
-  // @ts-ignore
-  safeProp('addresses'),
+  R.map(R.tap(log('map and join: '))),
 );
 
 firstAddressStreetWithJoin({
@@ -54,13 +54,13 @@ firstAddressStreetWithJoin({
 
 
 // join feels repetitive. chain can fix this
-const firstAddressStreetWithChain = R.compose(
-  R.map(R.tap(log('chain: '))),
-  //@ts-ignore
-  R.chain(safeProp('street')),
+const firstAddressStreetWithChain = R.pipe(
+  safeProp('addresses'),
   //@ts-ignore
   R.chain(safeHead),
-  safeProp('addresses'),
+  //@ts-ignore
+  R.chain(safeProp('street')),
+  R.map(R.tap(log('chain: '))),
 ) as unknown as (obj) => maybe<string>;
 
 firstAddressStreetWithChain({
@@ -86,12 +86,15 @@ firstAddressStreetWithChain({
  * the following form, taking 3 Kleisli functions:
  *
  * R.composeK(h, g, f) = R.compose(R.chain(h), R.chain(g), R.chain(f))
+ *
+ * Compose is just pipe but reading right to left.
+ * Here we are doing pipe over compose for easier left to right reading
  */
-const firstAddressStreetWithComposeK: (obj) => maybe<string> = composeK(
-  R.tap(log('composeK: ')),
-  safeProp('street'),
-  safeHead,
+const firstAddressStreetWithComposeK: (obj) => maybe<string> = pipeK(
   safeProp('addresses'),
+  safeHead,
+  safeProp('street'),
+  R.tap(log('composeK: ')),
 );
 
 firstAddressStreetWithComposeK({
