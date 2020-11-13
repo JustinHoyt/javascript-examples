@@ -1,4 +1,4 @@
-class Maybe implements monad {
+class Maybe<T> implements monad<T> {
   $value: unknown;
 
   get isNothing() {

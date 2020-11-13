@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "build": "babel src/$npm_config_file -d dist",
-    "start": "npm run build && node dist/$npm_config_file"
+    "start": "npm run build && node dist/$npm_config_file",
+    "tsstart": "npx tsc -w & npx nodemon src/functionalProgramming/monad.ts"
   },
   "author": "",
   "license": "ISC",

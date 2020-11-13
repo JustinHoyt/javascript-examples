@@ -1,24 +1,25 @@
 /* eslint-disable no-multiple-empty-lines */
 /// <reference path="../../types/node.d.ts"/>
 import * as R from 'ramda';
-import { composeK } from 'crocks/helpers';
+
 import Maybe from './DataTypes/Maybe';
+import { composeK } from 'crocks/helpers';
 
 type id = string | number;
-type maybe = Maybe | any;
 
 const log = (prefix: string) => (x) => console.log(prefix, x);
-const safeProp = (prop: id) => (obj): maybe => Maybe.of(obj[prop]);
+
+const safeProp = (prop: id) => (obj: object): maybe<unknown> => Maybe.of(obj[prop]);
 
 const safeHead = safeProp(0);
 
-const firstAddressStreet: (obj) => maybe = R.compose(
+const firstAddressStreet = R.compose(
   R.map(R.map(R.map(R.tap(log('mapping: '))))),
+  // @ts-ignore
   R.map(R.map(safeProp('street'))),
   R.map(safeHead),
   safeProp('addresses'),
-);
-
+) as unknown as (obj) => maybe<string>;
 
 // that's a lot of maps!
 
@@ -34,12 +35,13 @@ firstAddressStreet({
 //joins can fix this
 const join = (m) => m.join();
 
-const firstAddressStreetWithJoin: (obj) => maybe = R.compose(
+const firstAddressStreetWithJoin: (obj) => maybe<any>[] = R.compose(
   R.map(R.tap(log('map and join: '))),
   join,
   R.map(safeProp('street')),
   join,
   R.map(safeHead),
+  // @ts-ignore
   safeProp('addresses'),
 );
 
@@ -52,12 +54,14 @@ firstAddressStreetWithJoin({
 
 
 // join feels repetitive. chain can fix this
-const firstAddressStreetWithChain: (obj) => maybe = R.compose(
+const firstAddressStreetWithChain = R.compose(
   R.map(R.tap(log('chain: '))),
+  //@ts-ignore
   R.chain(safeProp('street')),
+  //@ts-ignore
   R.chain(safeHead),
   safeProp('addresses'),
-);
+) as unknown as (obj) => maybe<string>;
 
 firstAddressStreetWithChain({
   addresses: [{ street: { name: 'Mulburry', number: 8402 }, postcode: 'WC2N' }],
@@ -83,7 +87,7 @@ firstAddressStreetWithChain({
  *
  * R.composeK(h, g, f) = R.compose(R.chain(h), R.chain(g), R.chain(f))
  */
-const firstAddressStreetWithComposeK: (obj) => maybe = composeK(
+const firstAddressStreetWithComposeK: (obj) => maybe<string> = composeK(
   R.tap(log('composeK: ')),
   safeProp('street'),
   safeHead,

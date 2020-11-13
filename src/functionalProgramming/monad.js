@@ -1,6 +1,7 @@
 /* eslint-disable no-multiple-empty-lines */
 const R = require('ramda');
 const { composeK } = require('crocks');
+const { constant } = require('crocks/combinators');
 const Maybe = require('./DataTypes/MaybeJS.js');
 
 /**
@@ -99,3 +100,4 @@ const firstAddressStreetWithComposeK = composeK(
 firstAddressStreetWithComposeK({
   addresses: [{ street: { name: 'Mulburry', number: 8402 }, postcode: 'WC2N' }],
 });
+
