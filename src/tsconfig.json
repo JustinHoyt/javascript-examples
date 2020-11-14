@@ -8,6 +8,10 @@
       "strict": true,
       "noImplicitAny": true,
       "baseUrl": "./",
+      "typeRoots": [
+        "src/customTypings",
+        "node_modules/@types"
+      ]
     },
     "include": ["./src/**/*"]
 }

@@ -1,4 +1,6 @@
-class Maybe<T> implements monad<T> {
+import { Functor } from "ramda";
+
+class Maybe<T> implements Functor<T> {
   $value: unknown;
 
   get isNothing() {

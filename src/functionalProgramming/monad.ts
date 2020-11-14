@@ -2,24 +2,29 @@
 /// <reference path="../../types/node.d.ts"/>
 import * as R from 'ramda';
 
+import { Functor } from 'ramda';
 import Maybe from './DataTypes/Maybe';
+import { chain } from 'lodash';
+import { maybe } from 'purifree-ts';
 import { pipeK } from 'crocks';
 
 type id = string | number;
 
 const log = (prefix: string) => (x) => console.log(prefix, x);
 
-const safeProp = (prop: id) => (obj: object): maybe<unknown> => Maybe.of(obj[prop]);
+// export function map<T, U>(fn: (x: T) => U): (list: readonly T[]) => U[];
+const safeProp = (prop: id) => (obj: object): Functor<unknown> => Maybe.of(obj[prop]);
 
 const safeHead = safeProp(0);
 
+const map = (fn: Function) => <T>(obj): T => obj.map(fn);
+
 const firstAddressStreet = R.pipe(
   safeProp('addresses'),
-  // @ts-ignore
-  R.map(safeHead),
-  R.map(R.map(safeProp('street'))),
-  R.map(R.map(R.map(R.tap(log('mapping: '))))),
-) as unknown as (obj) => maybe<string>;
+  map(safeHead),
+  map(R.map(safeProp('street'))),
+  map(R.map(R.map(R.tap(log('mapping: '))))),
+);
 
 // that's a lot of maps!
 
@@ -35,9 +40,8 @@ firstAddressStreet({
 //joins can fix this
 const join = (m) => m.join();
 
-const firstAddressStreetWithJoin: (obj) => maybe<any>[] = R.pipe(
+const firstAddressStreetWithJoin: (obj) => Functor<unknown> = R.pipe(
   safeProp('addresses'),
-  // @ts-ignore
   R.map(safeHead),
   join,
   R.map(safeProp('street')),
@@ -50,19 +54,26 @@ firstAddressStreetWithJoin({
 });
 
 
+const result = R.pipe<number[], string[], number[], string[]>(
+  R.map(String),
+  R.map(Number),
+  R.map(String),
+)([1,2,3,4])
+
 
 
 
 // join feels repetitive. chain can fix this
 const firstAddressStreetWithChain = R.pipe(
   safeProp('addresses'),
-  //@ts-ignore
+  // @ts-ignore
   R.chain(safeHead),
-  //@ts-ignore
+  // @ts-ignore
   R.chain(safeProp('street')),
   R.map(R.tap(log('chain: '))),
-) as unknown as (obj) => maybe<string>;
+);
 
+// @ts-ignore
 firstAddressStreetWithChain({
   addresses: [{ street: { name: 'Mulburry', number: 8402 }, postcode: 'WC2N' }],
 });
@@ -90,7 +101,7 @@ firstAddressStreetWithChain({
  * Compose is just pipe but reading right to left.
  * Here we are doing pipe over compose for easier left to right reading
  */
-const firstAddressStreetWithComposeK: (obj) => maybe<string> = pipeK(
+const firstAddressStreetWithComposeK = pipeK(
   safeProp('addresses'),
   safeHead,
   safeProp('street'),
