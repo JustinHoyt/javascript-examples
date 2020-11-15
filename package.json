@@ -7,13 +7,13 @@
     "test": "jest",
     "build": "babel src/$npm_config_file -d dist",
     "start": "npm run build && node dist/$npm_config_file",
-    "tsstart": "npx tsc -w & npx nodemon src/functionalProgramming/monad.ts"
+    "tsstart": "npx tsc -w & npx nodemon $npm_config_file"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "crocks": "^0.12.4",
-    "fp-ts": "^2.8.5",
+    "fp-ts": "^2.8.6",
     "lodash": "^4.17.20",
     "purifree-ts": "^0.16.0-beta.10",
     "purify-ts": "^0.16.0-beta.5",
