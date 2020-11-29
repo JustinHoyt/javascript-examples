@@ -8,6 +8,7 @@
       "strict": true,
       "noImplicitAny": true,
       "baseUrl": "./",
+      "watch": true,
       "typeRoots": [
         "src/customTypings",
         "node_modules/@types"
