@@ -1,10 +1,9 @@
 import * as O from 'fp-ts/lib/Option';
 
-import { constant, flow } from 'fp-ts/lib/function';
-
 import { Option } from 'fp-ts/lib/Option';
+import { flow } from 'fp-ts/lib/function';
 
-const optionalProp = <P extends keyof T, T>(prop: P) => (obj: T): O.Option<T[P]> => O.of(obj[prop]);
+const optionalProp = <T, P extends keyof T>(prop: P) => (obj: T): O.Option<T[P]> => O.of(obj[prop]);
 
 interface MyMap {
   addresses: [
@@ -21,13 +20,12 @@ const obj: MyMap = {
   addresses: [
     {
       street: { name: 'Mulburry', number: 8402 },
-      postcode: 'WC2N'
-    }
+      postcode: 'WC2N',
+    },
   ],
-}
+};
 
-const getAddressMapping: (obj: MyMap) => Option<Option<Option<Option<void>>>> =
-flow(
+const getAddressMapping: (object: MyMap) => Option<Option<Option<Option<void>>>> = flow(
   O.fromNullable,
   O.map(optionalProp('addresses')),
   O.map(O.map(optionalProp(0))),
@@ -36,20 +34,16 @@ flow(
 );
 // that's a lot of mapping over Options!
 
-const addressMapping = getAddressMapping(obj);
-
-
-
-
+getAddressMapping(obj);
 
 // chain is a map and join combined, keeping monads of the same type from nesting.
-const getAddressChaining: (obj: MyMap) => Option<unknown> =
-flow(
+type GetProp = (object: MyMap) => Option<unknown>;
+const getAddressChaining: GetProp = flow(
   O.fromNullable,
   O.chain(optionalProp('addresses')),
   O.chain(optionalProp(0)),
   O.chain(optionalProp('street')),
-  O.fold(() => undefined, (street) => log('chain: ')(street))
+  O.fold(() => undefined, (street) => log('chain: ')(street)),
 );
 getAddressChaining(obj);
 // The typing is limited when understanding how to operate over the values in
@@ -57,19 +51,13 @@ getAddressChaining(obj);
 // context of previous computed values. For sitations like that use the bind
 // syntax, similar in concept to the Do syntax in Haskell
 
-
-
-
-
 // do/bind syntax is more flexible than chain because we can bind variables to
 // the context of the `do` as it goes through the actions.
-const getAddressBinding: (obj: MyMap) => Option<string> =
-flow(O.fromNullable,
+const getAddressBinding: (object: MyMap) => Option<string> = flow(O.fromNullable,
   O.bindTo('object'),
-  O.bind('addresses', ({object}) => O.of(object.addresses)),
-  O.bind('firstAdress', ({addresses}) => O.of(addresses[0])),
-  O.bind('street', ({firstAdress}) => O.of(firstAdress.street)),
-  O.fold(() => undefined, ({street}) => log('do: ')(street))
-);
+  O.bind('addresses', ({ object }) => O.of(object.addresses)),
+  O.bind('firstAdress', ({ addresses }) => O.of(addresses[0])),
+  O.bind('street', ({ firstAdress }) => O.of(firstAdress.street)),
+  O.fold(() => undefined, ({ street }) => log('do: ')(street)));
 
-getAddressBinding(obj)
+getAddressBinding(obj);
